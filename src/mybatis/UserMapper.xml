@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.duke.cloudnote.dao.UserMybatisDao">
+
+	<select id="getUserByLoginNamePwd" parameterType="map"
+		resultType="edu.duke.cloudnote.entity.User">
+		select
+		cn_user_id as cnUserId,
+		cn_user_name as cnUserName,
+		cn_user_password as cnUserPassword,
+		cn_user_token as cnUserToken,
+		cn_user_desc as cnUserDesc
+		from cn_user
+		where cn_user_name=#{cnUserName} AND
+		cn_user_password=#{cnUserPassword}
+	</select>
+
+	<insert id="createUser" parameterType="edu.duke.cloudnote.entity.User">
+		INSERT INTO
+		`cn_user`
+		(`cn_user_id`,
+		`cn_user_name`,
+		`cn_user_password`,
+		`cn_user_token`,
+		`cn_user_desc`
+		)
+		VALUES
+		(#{cnUserId},
+		#{cnUserName},
+		#{cnUserPassword},
+		#{cnUserToken},
+		#{cnUserDesc}
+		);
+	</insert>
+
+	<update id="updatePassword" parameterType="edu.duke.cloudnote.entity.User">
+		UPDATE `cn_user` 
+	SET
+	`cn_user_password` = #{cnUserPassword}
+	WHERE
+	`cn_user_id` = #{cnUserId} ;
+	</update>
+	
+	<select id="getUserByLoginName" parameterType="String"
+		resultType="edu.duke.cloudnote.entity.User">
+		select
+		cn_user_id as cnUserId,
+		cn_user_name as cnUserName,
+		cn_user_password as cnUserPassword,
+		cn_user_token as cnUserToken,
+		cn_user_desc as cnUserDesc
+		from cn_user
+		where cn_user_name=#{cnUserName} 
+	</select>
+</mapper> 
