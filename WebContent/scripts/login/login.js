@@ -4,7 +4,7 @@ $(function(){
 		var loginUserName = $("#count").val();
 		var loginPassword = $("#password").val();
 		var token = "";
-		var userId="";
+		var userId= "";
 		
 		jQuery.support.cors = true;
 		$.ajax({
@@ -54,7 +54,7 @@ $(function(){
 				"cnUserName":username ,
 				"cnUserPassword":password
 				};
-
+        
 		$.ajax({
 			type:"post",
 			url : basePath + "user/createUser",
@@ -91,7 +91,8 @@ $(function(){
  * @returns {Boolean}
  */
 function checkUserName(username){
-	var b = false;
+	var flag = false;
+	jQuery.support.cors = true;
 	$.ajax({ // check whether the userName has already existed
 		type:"post",
 		async:false,
@@ -102,16 +103,16 @@ function checkUserName(username){
 		success: function(result){
 	        if(result.status == -2){
 	        	get('warning_1').style.display='block';
-	        	b= false;
+	        	flag = false;
 	        }else{
-	        	b=true;
+	        	flag = true;
 	        }
         },
         error:function(){
-        	b=false;
+        	flag = false;
         }
 	});
-	return b;
+	return flag;
 };
 
 
@@ -128,25 +129,25 @@ function logout(){
  * @returns {Boolean}
  */
 function validOldPwd(oldPwd){
-	var flog = false;
+	var flag = false;
 	var loginUserName = getCookie(UserName);
        
 	jQuery.support.cors = true;
 	$.ajax({
 		type:"post",
 		async:false,
-		url:basePath + "user/checkUserOldpwd/"+loginUserName+"/"+oldPwd,
+		url:basePath + "user/checkUserOldpwd/"+loginUserName+"/"+Base64.encode(oldPwd),
 		dataType : "json",
 		beforeSend: function(xhr){
 			xhr.setRequestHeader('Content-Type', 'application/json');
 		},
 		success:function(result){
 			if(result.status == 1){
-				flog = true;
+				flag = true;
 			}
 		}
 	});
-	return flog;
+	return flag;
 }
 
 
@@ -158,9 +159,10 @@ function validOldPwd(oldPwd){
 function changepwd(changepwdSuccess,changepwdError){
 	var loginUserId = getCookie(cookie_key);
 	var pwd=$("#new_password").val();
+	jQuery.support.cors = true;
 	$.ajax({
 		type:"post",
-		url: basePath + "user/resetPwd/"+loginUserId+"/"+pwd, 
+		url: basePath + "user/resetPwd/"+loginUserId+"/"+Base64.encode(pwd), 
 		dataType : "json",
 		contentType : "application/json",
 		beforeSend: function(xhr){

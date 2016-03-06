@@ -152,9 +152,10 @@ public class UserController {
 			HttpServletResponse response) {
 		Response message = new Response();
 		try{
-			if(StringUtils.isNotEmpty(oldPwd)){
+			String decodePwd = new String(Base64.decodeBase64(oldPwd.getBytes("utf-8")));
+			if(StringUtils.isNotEmpty(decodePwd)){
 				User user = userService.findUserByLoginName(userName);
-				if(user != null && Md5Utils.md5(oldPwd).equals(user.getCnUserPassword())){
+				if(user != null && Md5Utils.md5(decodePwd).equals(user.getCnUserPassword())){
 					message.setStatus(1);
 					message.setMessage("pwd is correct!");
 				}else{
@@ -187,10 +188,20 @@ public class UserController {
 			HttpServletRequest request, 
 			HttpServletResponse response) {
 		Response message = new Response();
-		try{
-
-			if(StringUtils.isNotEmpty(userId) && StringUtils.isNotEmpty(pwd)){
-				userService.resetPwd(userId, pwd);
+		
+		try{			
+			String decodePwd = new String (Base64.decodeBase64(pwd.getBytes("utf-8")));
+			String auth = request.getHeader("Authorization");			
+			if(StringUtils.isNotEmpty(auth)){
+				String auths[] = auth.split(" ");				
+				if(auths.length == 2){				
+					String dec[] = new String (Base64.decodeBase64(auths[1].getBytes("utf-8"))).split(":");		
+					if(dec.length == 2 && dec[1].equals(request.getSession().getAttribute("userToken"))){				
+						if(StringUtils.isNotEmpty(userId) && StringUtils.isNotEmpty(decodePwd)){
+							userService.resetPwd(userId, decodePwd);								
+						}
+					}
+				}
 			}
 		}catch(Exception e){
 			e.printStackTrace();
